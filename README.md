@@ -1,4 +1,18 @@
 # Lite ESP8266 Client
+### Modified by e-tinkers
+
+## What have been changed?
+The original code was modified to supoorts for stm32 blue pill. The key changes are:
+
+- Using HardwareSerial for stm32 while maintain SoftwareSerial for others;
+- When using with stem32, it creates an instance of HardwareSerial at PA3, PA2 (Rx, Tx) with default baud rate of 115200;
+- Remote the dependency of `LiteSerialLogger.h` as 1) it is very avr MCUs specific implementation and only works for avr-based boards, 2) it is better for user to decide whether or not to use it at user's sketch.
+
+ESP8266 is able to communicate with the host reliably at 115200 when HardwareSerial is used. It is however must operated at 9600 when SoftwareSerial is used.
+
+===== Below is the Original README =====
+# Lite ESP8266 Client
+
 ### By Syonyk
 
 # What Is it?
