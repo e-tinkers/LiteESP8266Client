@@ -2,7 +2,7 @@
 ### Modified by e-tinkers
 
 ## What are the changes?
-This is a fork of [Syonyk/LiteESP8266Client](https://github.com/Syonyk/LiteESP8266Client) with modification for working on stm32 blue pill. The original code was modified to supoorts for stm32 blue pill. The key changes are:
+This is a fork and a modified version of [Syonyk/LiteESP8266Client](https://github.com/Syonyk/LiteESP8266Client). The original code was modified to supoorts for stm32 blue pill. The key changes are:
 
 - Using HardwareSerial for stm32 while maintain SoftwareSerial for others;
 - When using with stm32, it creates an instance of HardwareSerial at Serial2 pins PA3/PA2 (Rx/Tx) with default baud rate of 115200;
