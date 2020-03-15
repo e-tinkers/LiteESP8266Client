@@ -3,7 +3,7 @@
 
 #include "LiteESP8266Client.h"
 
-ifndef defined(ARDUINO_ARCH_STM32F1)
+#ifndef defined(ARDUINO_ARCH_STM32F1)
 #include "LiteSerialLogger.h"
 #endif
 
