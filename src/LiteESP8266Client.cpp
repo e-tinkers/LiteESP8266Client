@@ -2,10 +2,7 @@
 #include <Arduino.h>
 
 #include "LiteESP8266Client.h"
-
-#ifndef defined(ARDUINO_ARCH_STM32F1)
-#include "LiteSerialLogger.h"
-#endif
+// #include "LiteSerialLogger.h"    //disable this as it only worked for avr MCUs, user can decide on its main sketch
 
 // AT test commands and prefix.
 const char ESP8266_TEST[] PROGMEM = "AT";  // Test AT startup
