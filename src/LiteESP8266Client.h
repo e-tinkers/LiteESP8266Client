@@ -24,8 +24,13 @@
 
 // Basic include files - both are needed.
 #include <Arduino.h>
+#if defined(ARDUINO_ARCH_STM32F1)
+#include <HardwareSerial.h>
+#define ESP8266_TX PA3    //stm32F103 Serial2 Rx
+#define ESP8266_RX PA2    //stm32F103 Serial2 Tx
+#define ESP8266_BAUD_RATE 115200
+#else    // Assuming it is arduino and without 2nd hardware serial
 #include <SoftwareSerial.h>
-
 /**
  * Default software serial TX/RX pins.  This matches the SparkFun shield and
  * library, and happens to be what this library author uses as well for his
@@ -35,9 +40,10 @@
  * ESP8266 TX -> D8
  * ESP8266 RX -> D9
  */
-#define ESP8266_SW_TX 8
-#define ESP8266_SW_RX 9
-
+#define ESP8266_TX 8
+#define ESP8266_RX 9
+#define ESP8266_BAUD_RATE 9600
+#endif
 /**
  * Timeouts for various operations (in ms).  Note that, in many cases, if the
  * radio is busy, simply waiting will resolve things.  This is why the
@@ -115,8 +121,8 @@ public:
    * @param rx_pin The receive pin for software serial communication.
    * @return True if the radio is initialized properly, otherwise false.
    */
-  bool begin(unsigned long baud_rate = 9600, byte tx_pin = ESP8266_SW_TX,
-          byte rx_pin = ESP8266_SW_RX);
+  bool begin(unsigned long baud_rate = ESP8266_BAUD_RATE, byte tx_pin = ESP8266_TX,
+          byte rx_pin = ESP8266_RX);
 
   /**
    * Sends an "AT\r\n" string to the radio and looks for an "OK\r\n" response.
@@ -418,11 +424,11 @@ protected:
 private:
   /**
    * Disables command echo - "ATE0\r\n"
-   * 
+   *
    * This prevents the radio from echoing back the commands.  There is no reason
    * to do that with this library, and it simply wastes space in the buffer that
    * could be used for something useful.
-   * 
+   *
    * @return True if the command was successful.
    */
   bool disable_echo();
@@ -432,10 +438,10 @@ private:
    * program memory.  It will send the command, with any params appended, then
    * \r\n to terminate the command.  If params is NULL, then nothing is appended
    * beyond the primary command (useful for things like a bare AT).
-   * 
+   *
    * Does not check for any response - other code does that.  This just bangs it
    * out on the software serial port.
-   * 
+   *
    * @param progmem_command The command to send, in program memory.
    * @param params NULL if empty, or a data memory string of parameters to send.
    */
@@ -445,33 +451,33 @@ private:
    * Send a command to the radio, prefixed with the "AT+" command prefix.  This
    * sends "AT+", the command, and the params, if not null.  The command must be
    * in program memory.
-   * 
+   *
    * @param progmem_command The command to send, in program memory, prefixed
    *   with "AT+"
    * @param params NULL if empty, or a data memory string of parameters to send.
    */
-  void send_command_with_prefix(const char *progmem_command, 
+  void send_command_with_prefix(const char *progmem_command,
                                 const char *params = NULL);
 
   /**
    * Read serial output, matching it character for character until either the
    * desired response string is found or the read times out.
-   * 
+   *
    * This replaces the serial read buffer in other implementations with a bit
    * of more complex code, relying on the SoftwareSerial buffer to contain the
    * data while it's being read.  At lower baud rates doable with the software
    * serial interface, this is quite easy.
-   * 
+   *
    * read_for_response looks for the response string (from program memory) and
    * returns success if this is found, otherwise will return a timeout error
    * when the timeout is reached.
-   * 
+   *
    * This is useful for two things: Verifying that a command completed with the
    * desired response, and reading until a particular string is found.
-   * 
+   *
    * After success, the entire progmem_response_string will be consumed from the
    * buffer, with the head of the buffer being the next character after.
-   * 
+   *
    * @param progmem_response_string The string, in program memory, to look for
    *   in the output.
    * @param timeout_ms The maximum time, in ms, to wait for a response before
@@ -485,14 +491,14 @@ private:
   /**
    * Similar to above, but can read for both a success and a failure string for
    * commands that return one of two responses.
-   * 
+   *
    * If progmem_pass_string is found, LITE_ESP8266_SUCCESS is returned.
-   * 
+   *
    * If progmem_fail_string is found, LITE_ESP8266_FAILURE is returned.
-   * 
+   *
    * And, if neither string is found by the timeout, LITE_ESP8266_TIMEOUT is
    * returned.
-   * 
+   *
    * @param progmem_pass_string The "success" string, in program memory.
    * @param progmem_fail_string The "failure" string, in program memory.
    * @param timeout_ms The maximum time, in ms, to wait for a response before
@@ -500,11 +506,11 @@ private:
    * @return LITE_ESP8266_SUCCESS, _FAILURE, or _TIMEOUT, as appropriate.
    */
   uint8_t read_for_responses(const char* progmem_pass_string,
-          const char* progmem_fail_string, 
+          const char* progmem_fail_string,
           const unsigned int timeout_ms = COMMAND_RESPONSE_TIMEOUT);
 
   /**
-   * copy_serial_to_buffer does what the name implies.  It copies the serial 
+   * copy_serial_to_buffer does what the name implies.  It copies the serial
    * output to the buffer until either the read_until character is found,
    * max_bytes is copied, or the timeout is met.  The caller must allocate an
    * appropriate buffer and offer the size of it to prevent overwriting the end.
@@ -512,20 +518,20 @@ private:
    * If everything fits, this function will copy all data up to, but not
    * including, the read_until character, into the buffer.  However, the
    * read_until character will be removed from the serial buffer.
-   * 
+   *
    * Ex: abcdefg
    * If read_until is 'd', the returned string will be 'abc' and the remaining
    * serial buffer will be 'efg' - d is consumed.
-   * 
+   *
    * This function ensures that buffer is null terminated, and fits in the
    * size provided by max_bytes.  It will stop reading if the buffer is full.
-   * 
+   *
    * If you find a need to read binary data of a certain length, use the read()
    * function to read data directly from the serial output - this function
    * assumes a terminating character of some variety.
-   * 
+   *
    * Note that strings coming back from the ESP8266 are terminated with \r\n.
-   * 
+   *
    * Possible return values:
    * LITE_ESP8266_SUCCESS: Everything fit and read_until was found.
    * LITE_ESP8266_LENGTH_EXCEEDED: max_bytes of data (null terminated) were
@@ -540,12 +546,12 @@ private:
    */
   uint8_t copy_serial_to_buffer(char *buffer,
                       const char read_until,
-                      const uint16_t max_bytes, 
+                      const uint16_t max_bytes,
                       const unsigned int timeout_ms = COMMAND_RESPONSE_TIMEOUT);
 
   /**
    * Read serial until a certain character is found, or the timeout occurs.
-   * 
+   *
    * If you wish to read for a string, use read_for_response and look for an
    * LITE_ESP8266_SUCCESS response.
    *
@@ -553,10 +559,9 @@ private:
    * @param timeout_ms Timeout, in milliseconds, to wait for that character.
    * @return LITE_ESP8266_SUCCESS or LITE_ESP8266_TIMEOUT.
    */
-  uint8_t read_until(const char read_until, 
+  uint8_t read_until(const char read_until,
                      const unsigned int timeout_ms = COMMAND_RESPONSE_TIMEOUT);
 
 };
 
 #endif // _LITEESP8266CLIENT_H_
-
