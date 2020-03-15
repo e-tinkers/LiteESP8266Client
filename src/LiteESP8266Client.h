@@ -24,7 +24,7 @@
 
 // Basic include files - both are needed.
 #include <Arduino.h>
-#if defined(ARDUINO_ARCH_STM32F1)
+#if ARDUINO_ARCH_STM32
 #include <HardwareSerial.h>
 #define ESP8266_TX PA3    //stm32F103 Serial2 Rx
 #define ESP8266_RX PA2    //stm32F103 Serial2 Tx
@@ -419,7 +419,11 @@ public:
 protected:
   // Pointer to the SoftwareSerial object used to talk to the radio.
   // Should be about 4 bytes of SRAM.
+#if ARDUINO_ARCH_STM32
+  HardwareSerial* radio_serial_;
+#else
   SoftwareSerial* radio_serial_;
+#endif
 
 private:
   /**

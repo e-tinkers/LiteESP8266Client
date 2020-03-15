@@ -1,4 +1,3 @@
-
 #include <Arduino.h>
 
 #include "LiteESP8266Client.h"
@@ -61,18 +60,14 @@ const char ESP8266_SSL[] PROGMEM = "\"SSL\",";
 
 LiteESP8266::LiteESP8266() {
   // Ensure radio_serial_ is null - allows detecting if it has been set.
-#ifndef defined(ARDUINO_ARCH_STM32F1)
   radio_serial_ = NULL;
-#endif
 }
 
 LiteESP8266::~LiteESP8266() {
   // If radio_serial_ has been allocated, delete it.
-#ifndef defined(ARDUINO_ARCH_STM32F1)
   if (radio_serial_) {
     delete radio_serial_;
   }
-#endif
 }
 
 // begin() can be called multiple times during execution to set new baud rates.
@@ -81,7 +76,7 @@ bool LiteESP8266::begin(unsigned long baud_rate, byte tx_pin, byte rx_pin) {
 
   // Create a SoftwareSerial object if one does not already exist.
   if (!radio_serial_) {
-  #if defined(ARDUINO_ARCH_STM32F1)
+  #if ARDUINO_ARCH_STM32
     radio_serial_ = new HardwareSerial(tx_pin, rx_pin);
   #else
     radio_serial_ = new SoftwareSerial(tx_pin, rx_pin);
