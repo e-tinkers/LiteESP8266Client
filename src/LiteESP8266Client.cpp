@@ -702,7 +702,7 @@ char *LiteESP8266::get_response_packet(const unsigned int max_allocate_bytes,
 // Note: This is not using the above to avoid double allocating memory.
 char *LiteESP8266::get_http_response(const unsigned int max_allocate_bytes,
         const unsigned int timeout_ms) {
-  char content_length_buffer[16];
+  char content_length_buffer[5];
   char *data;
   unsigned long start_time = millis();
 
@@ -716,8 +716,11 @@ char *LiteESP8266::get_http_response(const unsigned int max_allocate_bytes,
             sizeof(content_length_buffer));
     content_length = atoi(content_length_buffer);
 
-    // Read for CRLFCRLF - this terminates the response header.
-    if (read_for_response(ESP8266_CRLFCRLF, CLIENT_CONNECT_TIMEOUT) ==
+    char payload_header[11];
+    sprintf(payload_header, PSTR("+IPD,%s:"), content_length_buffer);
+
+    // Read until end of "+IPD,xxxx:" - this marks the beginning of payload.
+    if (read_for_response(payload_header, CLIENT_CONNECT_TIMEOUT) ==
             LITE_ESP8266_SUCCESS) {
       // Found it - next content_length bytes are data!
       if (max_allocate_bytes > content_length) {

@@ -6,9 +6,12 @@ This is a fork and a modified version of [Syonyk/LiteESP8266Client](https://gith
 
 - Using HardwareSerial for stm32 while maintain SoftwareSerial for others;
 - When using with stm32, it creates an instance of HardwareSerial at Serial2 pins PA3/PA2 (Rx/Tx) with default baud rate of 115200;
-- Remove the dependency of `LiteSerialLogger.h` as 1) it uses direct AVR registers access and only works for AVR-based Arduino boards, 2) users can decide on whether to use the library at user sketch and therefore not necessary to be part of LiteESP8266Client's dependency.
+- Remove the dependency of `LiteSerialLogger.h` as 1) it uses direct AVR registers access and only works for AVR-based Arduino boards, 2) users can decide on whether to use the library at user sketch and therefore not necessary to be part of LiteESP8266Client's dependency;
+- Fixed a bug on `LiteESP8266::get_http_response()` to correctly get the response payload;
+- Add a cleaner http client example for both GET and POST requests;
+- Add platformio.ini to show the `build_flags` required for supporting sprintf floating point used in new webclient example. For avr-based Arduinos, uses `build_flags = -Wl,-u,vfprintf -lprintf_flt -lm`.
 
-ESP8266 is able to communicate with the host reliably at 115200 when HardwareSerial is used. It is however must operated at 9600 when SoftwareSerial is used.
+ESP8266 is able to communicate with the host reliably at 115200 when HardwareSerial is used. It is however recommend to use 9600 baudrate when SoftwareSerial is used.
 
 ===== Below is the Original README =====
 # Lite ESP8266 Client
@@ -60,7 +63,7 @@ It is really, really important for you to note that returned data has been alloc
 # How Does it Work?
 I got greatly annoyed at the state of Arduino libraries for working with an ESP8266 as an AT serial device when I was working on a project.  The libraries just waste SRAM horribly.  Either they have their own buffer (on top of the Serial or SoftwareSerial buffer), they put all their string constants in data memory (Harvard architecture, folks!), or both.  It's easy to end up with 700-800 bytes of SRAM used just to connect to an AP and transfer a bit of data.  *This is a problem* when you only have 2039 usable bytes to start with!
 
-So I wrote my own, based on the principles of minimum SRAM use.  
+So I wrote my own, based on the principles of minimum SRAM use.
 
 I only support SoftwareSerial, as that's the most useful for me.  Porting this to work with hardware serial ports wouldn't be tricky, and would actually save a good bit of SRAM (as most of my SRAM use is from the SoftwareSerial read buffers).  All of my string constants are stored in program memory, and the code strongly encourages people to put their string constants in program memory too.
 
@@ -75,4 +78,3 @@ Great!  File a bug report.  I use this library and will be updating it as I find
 Eh.  I'm pretty good on stuff.  If you want to buy a bizarre little Chinese electronic gizmo to tear apart, I wouldn't mind.
 
 What I would prefer is for you to learn how to properly write libraries for a Harvard architecture system and not be silly with memory.
-
