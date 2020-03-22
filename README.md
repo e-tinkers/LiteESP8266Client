@@ -2,13 +2,13 @@
 ### Modified by e-tinkers
 
 ## What are the changes?
-This is a fork and a modified version of [Syonyk/LiteESP8266Client](https://github.com/Syonyk/LiteESP8266Client). The original code was modified to supoorts for stm32 blue pill. The key changes are:
+This is a fork and a modified version of [Syonyk/LiteESP8266Client](https://github.com/Syonyk/LiteESP8266Client). The original code was modified to supoorts stm32 blue pill. The key changes are:
 
 - Using HardwareSerial for stm32 while maintain SoftwareSerial for others;
 - When using with stm32, it creates an instance of HardwareSerial at Serial2 pins PA3/PA2 (Rx/Tx) with default baud rate of 115200;
 - Remove the dependency of `LiteSerialLogger.h` as 1) it uses direct AVR registers access and only works for AVR-based Arduino boards, 2) users can decide on whether to use the library at user sketch and therefore not necessary to be part of LiteESP8266Client's dependency;
 - Fixed a bug on `LiteESP8266::get_http_response()` to correctly get the response payload;
-- Add a cleaner http client example for both GET and POST requests;
+- Add a cleaner http client example for using both GET and POST requests from a public-accessable http test site;
 - Add platformio.ini to show the `build_flags` required for supporting sprintf floating point used in new webclient example. For avr-based Arduinos, uses `build_flags = -Wl,-u,vfprintf -lprintf_flt -lm`.
 
 ESP8266 is able to communicate with the host reliably at 115200 when HardwareSerial is used. It is however recommend to use 9600 baudrate when SoftwareSerial is used.
