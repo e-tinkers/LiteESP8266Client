@@ -3,12 +3,12 @@
 #include <Arduino.h>
 #include <LiteESP8266Client.h>
 
-#define PACKET_MTU 1500    // Packet MTU is 1500 bytes
+#define PACKET_MTU 1500    // Standard network MTU is 1500 bytes
 
 LiteESP8266 radio;
 
-const char ssid[] PROGMEM = "DIDI1";    //change it to your wifi SSID
-const char password[] PROGMEM = "blinkie291boo";    //change it to your wifi password
+const char ssid[] PROGMEM = "your_ssid";    //change it to your wifi SSID
+const char password[] PROGMEM = "your_password";    //change it to your wifi password
 const char host[] PROGMEM = "httpbin.org";
 const int port = 80;
 
