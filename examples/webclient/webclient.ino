@@ -17,6 +17,7 @@ const char http_host[] PROGMEM = "Host: httpbin.org\r\n";
 const char http_close_connection[] PROGMEM = "Connection: close\r\n\r\n";
 const char success[] PROGMEM = "success";
 const char failed[] PROGMEM = "failed";
+const char error_data_null[] PROGMEM = "Error: data came back null.";
 
 void setupStationMode() {
   Serial.print(F("Setup station mode... "));
@@ -32,18 +33,18 @@ void joinAP() {
   Serial.print(ssid);
   Serial.print(F("... "));
   if (radio.connect_to_ap(ssid, password)) {
-    Serial.println(F("success."));
+    Serial.println(PSTR(success));
   } else {
-    Serial.println(F("failed."));
+    Serial.println(PSTR(failed));
   }
 }
 
 void establishTcpConnect() {
   Serial.print(F("Establish TCP Connection... "));
   if (radio.connect_progmem(host, port)) {
-    Serial.println(F("success."));
+    Serial.println(PSTR(success));
   } else {
-    Serial.println(F("failure."));
+    Serial.println(PSTR(failed));
   }
 }
 
@@ -51,11 +52,11 @@ void getHttpResponse() {
   char *data;
   while ((data = radio.get_http_response(PACKET_MTU, 5000))) {
     if (data) {
-      Serial.print(PSTR("Response Payload Length = "));
+      Serial.print(F("Response Payload Length = "));
       Serial.println(strlen(data));
       Serial.println(data);
     } else {
-      Serial.println(F("Error: Data came back null."));
+      Serial.println(PSTR(error_data_null));
     }
   }
   free(data);
@@ -65,10 +66,10 @@ void getHttpPacket() {
   char *data;
   while ((data = radio.get_response_packet(PACKET_MTU, 5000))) {
     if (data) {
-      Serial.println(PSTR("Packet Received..."));
+      Serial.println(F("Packet Received..."));
       Serial.println(data);
     } else {
-      Serial.println(F("Error: Data came back null."));
+      Serial.println(PSTR(error_data_null));
     }
   }
   free(data);
