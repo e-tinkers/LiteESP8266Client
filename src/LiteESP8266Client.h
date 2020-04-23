@@ -24,6 +24,9 @@
 
 // Basic include files - both are needed.
 #include <Arduino.h>
+
+#define Flash_P(pstr_pointer) (reinterpret_cast<const __FlashStringHelper *>(pstr_pointer))
+
 #if ARDUINO_ARCH_STM32
 #include <HardwareSerial.h>
 #define ESP8266_TX PA3    //stm32F103 Serial2 Rx

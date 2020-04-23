@@ -9,7 +9,8 @@ This is a fork and a modified version of [Syonyk/LiteESP8266Client](https://gith
 - Remove the dependency of `LiteSerialLogger.h` as 1) it uses direct AVR registers access and only works for AVR-based Arduino boards, 2) users can decide on whether to use the library at user sketch and therefore not necessary to be part of LiteESP8266Client's dependency;
 - Fixed a bug on `LiteESP8266::get_http_response()` to correctly get the response payload;
 - Add a cleaner http client example for using both GET and POST requests from a public-accessable http test site;
-- Add platformio.ini to show the `build_flags` required for supporting sprintf floating point used in new webclient example. For avr-based Arduinos, uses `build_flags = -Wl,-u,vfprintf -lprintf_flt -lm`.
+- Add platformio.ini to show the `build_flags` required for supporting sprintf floating point used in new webclient example. For avr-based Arduinos, uses `build_flags = -Wl,-u,vfprintf -lprintf_flt -lm`;
+- Introduce `Flash_P` macro which make make the printing of PROGMEM_variables easier with `Serial.print(Flash_P(PROGMEM_var))`.
 
 ESP8266 is able to communicate with the host reliably at 115200 when HardwareSerial is used. It is however recommend to use 9600 baudrate when SoftwareSerial is used.
 
