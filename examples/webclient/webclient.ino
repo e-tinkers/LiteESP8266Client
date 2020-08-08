@@ -100,6 +100,8 @@ void httpPost() {
   // This requires sprintf floating point support,
   // see platformio.ini build_flags for ststm32 Arduino core
   // for avr-based Arduinos, uses `build_flags = -Wl,-u,vfprintf -lprintf_flt -lm`
+  // if you can't change build_flag (e.g. Arduino IDE), then you can use dtostrf()
+  // to convert float to str
   sprintf(http_post_content, "{\"temperature\":%.2f}", t);
 
   char content_length[8];
