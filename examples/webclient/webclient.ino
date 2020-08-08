@@ -60,11 +60,11 @@ void getHttpResponse() {
       Serial.print(F("Response Payload Length = "));
       Serial.println(strlen(data));
       Serial.println(data);
+      free(data);
     } else {
       Serial.println(Flash_P(error_data_null));
     }
   }
-  free(data);
 }
 
 void getHttpPacket() {
@@ -73,11 +73,11 @@ void getHttpPacket() {
     if (data) {
       Serial.println(F("Packet Received..."));
       Serial.println(data);
+      free(data);
     } else {
       Serial.println(Flash_P(error_data_null));
     }
   }
-  free(data);
 }
 
 void httpGet() {
@@ -115,7 +115,7 @@ void httpPost() {
 void setup() {
   delay(2000);
   radio.begin(115200);
-  Serial.begin(921600);
+  Serial.begin(11500);
   while (!Serial) {};
 
   setupStationMode();
