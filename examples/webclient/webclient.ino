@@ -27,9 +27,9 @@ const char error_data_null[] PROGMEM = "Error: data came back null.";
 void setupStationMode() {
   Serial.print(F("Setup station mode... "));
   if (radio.set_station_mode()) {
-    Serial.println(Plash_P(success));
+    Serial.println(Flash_P(success));
   } else {
-    Serial.println(Plash_p(failed));
+    Serial.println(Flash_P(failed));
   }
 }
 
